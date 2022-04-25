@@ -7,58 +7,68 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+Web Site link:
+https://nuron-nft.tk/
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Html, css and javascript files of the site were taken from http://preview.themeforest.net/item/nuron-nft-marketplace-html-template/full_screen_preview/35154756 and edited. Then, using laravel backend operation has been done.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Project Screenshot
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+User-Side
 
-## Learning Laravel
+<p float="left">
+    
+![1](https://user-images.githubusercontent.com/83976212/165008446-cd35a0fc-8110-484f-90a8-b750ac3330aa.PNG)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+![2](https://user-images.githubusercontent.com/83976212/165008224-df3e06a0-6cf5-4d8a-b0c9-265c503e0da7.PNG)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+![3.1](https://user-images.githubusercontent.com/83976212/165008674-dc11d9d1-e3b2-49b0-b1dd-e04763bd338f.PNG)
+    
+![6](https://user-images.githubusercontent.com/83976212/165008579-811171c5-566b-4c84-b25c-ec7248779a29.PNG)
+    
+![3](https://user-images.githubusercontent.com/83976212/165008493-046ef215-5b2c-4600-9636-d16697c2ddc5.PNG)
+    
+ 
+![5](https://user-images.githubusercontent.com/83976212/165008571-6e8b9d77-1404-47a2-885c-20b1b934b8fe.PNG)
+    
+![Capture77](https://user-images.githubusercontent.com/83976212/165009310-b09ac8a7-b688-4a20-a636-47105da7097b.PNG)
 
-## Laravel Sponsors
+ ![Capture10](https://user-images.githubusercontent.com/83976212/165008719-4f24cc24-a610-4bde-ac71-c1a5429d6367.PNG)
+</p>
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+<p float="left">
+<img src="https://user-images.githubusercontent.com/83976212/165008682-b5ee38f5-5cd6-46a6-9f98-8d3fc6f17e40.png"  width="330" />
 
-### Premium Partners
+<img src="https://user-images.githubusercontent.com/83976212/165008591-5f3d22a1-cfa4-40d0-90c4-1460b48b5247.PNG"  width="330" />
+    
+<img src="https://user-images.githubusercontent.com/83976212/165009200-08b307ac-97d7-4b68-b448-f04ec6424c1a.png"  width="330" />    
+    
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+</p>
 
-## Contributing
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
+ ![77](https://user-images.githubusercontent.com/83976212/165009475-eda50a38-a578-4daa-a6a9-1a838c9e15c4.PNG)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-## Security Vulnerabilities
+![Capture7](https://user-images.githubusercontent.com/83976212/165009439-953a66cf-9e9c-42e6-ad26-32d40961cb22.PNG)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+<br><br>
 
-## License
+Admin-Side
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+![admin1](https://user-images.githubusercontent.com/83976212/165009517-db42c1b5-b564-458b-ad0e-18d41976a850.PNG)
+
+![admin2](https://user-images.githubusercontent.com/83976212/165010038-833832a9-232e-420d-92ff-703d2f6dd823.PNG)
+
+
+![admin3](https://user-images.githubusercontent.com/83976212/165009525-1a56073b-4687-4e19-8cd6-72e010c13363.PNG)
+
+![admin4](https://user-images.githubusercontent.com/83976212/165009534-b1399446-090f-4b6c-858b-e82409650ce9.PNG)
+
+![admin5](https://user-images.githubusercontent.com/83976212/165009542-07c5a1f5-183c-4300-a979-bfc098bd270d.PNG)
+
+
+![db](https://user-images.githubusercontent.com/83976212/165009550-3e8d0025-9866-42b7-95e4-07ae0fff6091.PNG)
+
+
