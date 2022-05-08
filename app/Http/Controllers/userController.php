@@ -48,9 +48,18 @@ class userController extends Controller
 
     $userId=Auth::user()->userId;
 
-
+    //    $data['ownerNft']=nftModel::where('ownerId',$userId)->get();
+    //    $data['createNft']=nftModel::where('createrId',$userId)->get();
+    //    $data['onSaleNft']=nftModel::where('ownerId',$userId)->where('sellStatus',1)->get();
        
     $data['ownerNft']=DB::select("select * from createNft inner join users on users.userId=createNft.ownerId where createNft.sellStatus!=-1 and createNft.ownerId='".$userId."' order by createNft.updated_at desc");
+    // $data['ownerNftBid']=DB::select("select first_name,last_name,pp,userId from users where userId in (select bidAccount from bidNft where sellId is null  and nftId in (select nftId from createNft inner join users on users.userId=createNft.ownerId where createNft.ownerId='".$userId."'))");
+    // $data['ownerNft']=[];
+    // $data['ownerNftBid']=DB::select("select  users.first_name,users.last_name,users.pp,users.userId,bidNft.nftId,
+    // bidNft.bid
+    //  from users inner join bidNft on users.userId=bidNft.bidAccount
+    //  where  userId in (select bidAccount from bidNft where  nftId in 
+    //  (select nftId from createNft  where createNft.ownerId='".$userId."')) order by bidNft.bid desc, bidNft.created_at ");
     
    
      $data['ownerNftBid']=DB::select("select users.first_name,users.last_name,users.gender,users.pp,users.userId,bidNft.nftId,
@@ -86,10 +95,16 @@ class userController extends Controller
         $arrayNft=substr($arrayNft, 0, -1);
         // tekrar bak
         $data['likesNft']=DB::select('select * from createNft inner join users on users.userId=createNft.ownerId where createNft.sellStatus!=-1 and nftId IN ('.$arrayNft.')');
+        
+
+        $data['likesNftBid']=DB::select('select users.first_name,users.last_name,users.gender,users.pp,users.userId,bidNft.nftId,
+        bidNft.bid from users inner join bidNft on users.userId=bidNft.bidAccount and bidNft.sellId is null and bidNft.nftId IN ('.$arrayNft.') order by bidNft.bid desc ');
+    
        }
        else
        {
         $data['likesNft']=[];
+        $data['likesNftBid']=[];
        }
 
      return view('user/profile',$data);
@@ -108,6 +123,10 @@ class userController extends Controller
         try {
             $check=(Auth::attempt(['email'=>$request->email,'password'=>$request->password]));
             
+        //     $bank= testModel::where('userId',Auth::user()->userId)->first();
+            
+        //     Session::put('balance',$bank->balance);    //   $bank->coinType  $bank->balance
+
        
             if($check && Auth::user()->accountStatus==1 )
             {
@@ -136,6 +155,7 @@ class userController extends Controller
     
     public function signOut()
     {
+        // Session::forget('balance');
 
         Auth::logout();
         return redirect()->to('');
@@ -166,6 +186,7 @@ class userController extends Controller
 
         $errors = ['info'=>'true'];
         return redirect()->to('edit-profile')->withErrors($errors);
+        //  return redirect()->to('my');
 
         }
          catch (\Throwable $th) {
@@ -227,7 +248,8 @@ class userController extends Controller
 
     public function updatePw(Request $request)
     {
-
+        //  $a=array('as'=>'asd');
+        // return response()->json($a);
         if (Hash::check($request->oldPassword, Auth::user()->password)) {
             $password=1;
         }
@@ -290,6 +312,7 @@ class userController extends Controller
         $rndStr=Str::random(30);
         $hashId=Carbon::now()->timestamp.$rndStr;
 
+    //    $dublicateMail=userModel::where('email',$request->email)->count();
    
         $validator=Validator::make($request->all(),[
             'email' => 'email|unique:users|max:255',]);
