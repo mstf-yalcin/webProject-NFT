@@ -930,10 +930,15 @@ class nftController extends Controller
             
             $arrayNft=substr($arrayNft, 0, -1);
             $data['likesNft']=DB::select('select * from createNft inner join users on users.userId=createNft.ownerId where createNft.sellStatus!=-1 and nftId IN ('.$arrayNft.')');
-           }
+          
+            $data['likesNftBid']=DB::select('select users.first_name,users.last_name,users.gender,users.pp,users.userId,bidNft.nftId,
+            bidNft.bid from users inner join bidNft on users.userId=bidNft.bidAccount and bidNft.sellId is null and bidNft.nftId IN ('.$arrayNft.') order by bidNft.bid desc ');
+          }
            else
            {
             $data['likesNft']=[];
+            $data['likesNftBid']=[];
+
            }
 
           }
