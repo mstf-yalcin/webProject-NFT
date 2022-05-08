@@ -38,7 +38,7 @@ class nftController extends Controller
       {
         $indexId[-1]=" ";
         $data['indexBid']=DB::select('select users.first_name,users.last_name,users.gender,users.pp,users.userId,bidNft.nftId,
-        bidNft.bid from users inner join bidNft on users.userId=bidNft.bidAccount and bidNft.sellId is null and bidNft.nftId IN ('.$indexId.')');
+        bidNft.bid from users inner join bidNft on users.userId=bidNft.bidAccount and bidNft.sellId is null and bidNft.nftId IN ('.$indexId.')  order by bidNft.bid desc');
       }
       else
       $data['indexBid']=[];
@@ -55,7 +55,7 @@ class nftController extends Controller
       {
         $indexOrderById[-1]=" ";
         $data['indexOrderByBid']=DB::select('select users.first_name,users.last_name,users.gender,users.pp,users.userId,bidNft.nftId,
-        bidNft.bid from users inner join bidNft on users.userId=bidNft.bidAccount and bidNft.sellId is null and bidNft.nftId IN ('.$indexOrderById.')');
+        bidNft.bid from users inner join bidNft on users.userId=bidNft.bidAccount and bidNft.sellId is null and bidNft.nftId IN ('.$indexOrderById.')  order by bidNft.bid desc');
       }
       else
       $data['indexOrderByBid']=[];
@@ -74,7 +74,7 @@ class nftController extends Controller
         $nftBasedId[-1]=" ";
         
         $data['nftBasedBid']=DB::select('select users.first_name,users.last_name,users.gender,users.pp,users.userId,bidNft.nftId,
-        bidNft.bid from users inner join bidNft on users.userId=bidNft.bidAccount and bidNft.sellId is null and bidNft.nftId IN ('.$nftBasedId.')');
+        bidNft.bid from users inner join bidNft on users.userId=bidNft.bidAccount and bidNft.sellId is null and bidNft.nftId IN ('.$nftBasedId.')  order by bidNft.bid desc');
       }
       else
       $data['nftBasedBid']=[];
@@ -275,6 +275,21 @@ class nftController extends Controller
     public function nftUpdatePage($nftId)
     {
 
+      // $bid= DB::select("select * from users inner join bidNft on users.userId=bidNft.bidAccount 
+      // where nftId= ? and sellId is null and bid>= ? ORDER BY bidNft.bid desc, bidNft.updated_at;",[$nftId,12]);
+      
+      // dd($bid==null);
+
+
+      // $bidIsNull=DB::table('bidNft')->where('nftId',$nftId)->where('sellId',null)->first();
+
+
+      // dd($bidIsNull!=null);
+
+      // $bid= DB::select("select * from users inner join bidNft on users.userId=bidNft.bidAccount 
+      // where nftId= ? and sellId is null and bid>= ? ORDER BY bidNft.bid desc, bidNft.updated_at;",[$nftId,10])[0];
+      
+      // dd($bid);
       $data['nft']=nftModel::where('nftId',$nftId)->where('sellStatus','!=',-1)->first();
       if(Auth::check() && $data['nft']!=null  && Auth::user()->userId==$data['nft']->ownerId)
     {
@@ -297,11 +312,13 @@ class nftController extends Controller
       } 
       catch (\Throwable $th) {
         return redirect()->back();
+          //yonlendirmeleri düzelt
       }
     }
     else
     {
       try {
+        //yonlendirmeleri düzelt
         return redirect()->to('nft/'.$nftId);
       } catch (\Throwable $th) {
         return redirect()->to('');
@@ -317,6 +334,7 @@ class nftController extends Controller
 
       $bidIsNull=DB::table('bidNft')->where('nftId',$nftId)->where('sellId',null)->first();
       
+      //teklif var mı ?
 
       if($request->putonsale==null)
       $request->putonsale=0;
@@ -329,12 +347,19 @@ class nftController extends Controller
       if($bidIsNull != null)
       {
 
+        //Anında satış varsa satışı gercekleştir
         if($request->instantSale==1 && $request->putonsale==1 )
         {
          
+        
+          // $bid=DB::table('bidNft')->where('nftId',$nftId)->whereNull('sellId')->where('bid',$request->price)->orderBy('bid','desc')->orderBy('updated_at')->first(); 
          $bid= DB::select("select * from users inner join bidNft on users.userId=bidNft.bidAccount 
            where bidNft.nftId=? and bidNft.sellId is null and users.balance>=? and bidNft.bid>=? and users.balance>=bidNft.bid ORDER BY bidNft.bid desc, bidNft.created_at",[$nftId,$request->price,$request->price]);
 
+          //  $bid= DB::select("select * from users inner join bidNft on users.userId=bidNft.bidAccount 
+          //  where nftId= ? and sellId is null and bid>= ? ORDER BY bidNft.bid desc, bidNft.updated_at;",[$nftId,10])[0];
+          //  dd($bid);
+             //Güncellenen fiyatta teklif var satış yap.
            if($bid!=null)
            {
             $bid=$bid[0];
@@ -367,10 +392,17 @@ class nftController extends Controller
               'updated_at'=>$time,
             ]);
     
+            //satıs sonrası nft tablosu guncelle
+            
+            //royality 
+            // $royality=($nft->royality/100);
+            // $royalityUpdate=((double)$request->price)*((double)$royality);
+            // $balanceUpdate=((double)$request->price)-((double)$royalityUpdate);
 
             $royality=($nft->royality/100);
             $royalityUpdate=((double)$request->price)*((double)$royality);
             $balanceUpdate=((double)$request->price)-((double)$royalityUpdate);
+            // $serviceFee=($nft->amount*(2.5/100));
             $serviceFee=($request->price*(2.5/100));
             $balanceUpdate=((double)$balanceUpdate)-((double)$serviceFee);
     
@@ -408,6 +440,9 @@ class nftController extends Controller
               'instantSale'=>0
             ]);
 
+             //yonlendir
+            //  dd("teklif var satıs gercekleşti");
+
             $user=userModel::where('userId',$userId)->first();
 
             if($user->orderNotification==1)
@@ -420,6 +455,7 @@ class nftController extends Controller
                       $message->subject('Nuron NFT');
                       $message->to($array['email']);
                });
+              //mail gonder kabul;
             }
 
             if(Auth::user()->orderNotification==1)
@@ -432,11 +468,13 @@ class nftController extends Controller
                       $message->subject('Nuron NFT');
                       $message->to($array['email']);
                });
+              //mail gonder kabul;
             }
 
              return redirect()->to('nft/'.$nftId);
 
            }
+           //Güncellenen fiyatta teklif veren yok 
            else
            {
             nftModel::where('nftId',$nftId)->update([
@@ -445,7 +483,10 @@ class nftController extends Controller
               'amount'=>$request->price,
               'category'=>$request->category
              ]);
+           
+            //  dd("güncellenen fiyatta teklif yok");
              return redirect()->to('nft/'.$nftId);
+             //yonlendir
            }
   
         }
@@ -457,10 +498,12 @@ class nftController extends Controller
             'amount'=>$request->price,
             'category'=>$request->category
            ]);
+          //  dd("anında satiş yok");
            return redirect()->to('nft/'.$nftId);
         }
       }
 
+      //teklif yok.
       else
       {
           
@@ -471,7 +514,10 @@ class nftController extends Controller
           'category'=>$request->category
          ]);
         
+        //  dd("teklif yok");
          return redirect()->to('nft/'.$nftId);
+         //yonlendir
+
       }
       
      
@@ -496,8 +542,10 @@ class nftController extends Controller
         where bidNft.nftId=? and bidNft.status=2 order by updated_at desc',[$nftId]);
        
 
+        //nft satışta mı
         $control=DB::select("select * from createNft where nftId=? and sellStatus=1 limit 1",[$nftId]);
  
+        //satıştaysa
         if($control)
         {
           $data['bidHistory']=DB::select('select users.userId,
@@ -526,6 +574,56 @@ class nftController extends Controller
         }
 
 
+
+        $data['randomNft']=DB::select('select * from createNft where nftId != ? and sellStatus=1 order by rand() limit 5',[$nftId]);
+       
+        $randomNftBid="";
+        foreach ($data['randomNft'] as $key => $nft) {
+          $randomNftBid.="'".$nft->nftId."',";
+   
+         }
+         if($randomNftBid!="")
+         {
+           $randomNftBid[-1]=" ";
+           $data['randomNftBid']=DB::select('select users.first_name,users.last_name,users.gender,users.pp,users.userId,bidNft.nftId,
+           bidNft.bid from users inner join bidNft on users.userId=bidNft.bidAccount and bidNft.sellId is null and bidNft.nftId IN ('.$randomNftBid.') order by bidNft.bid desc ');
+         }
+         else
+         $data['randomNftBid']=[];
+
+        // $data['bidHistory']=DB::select('select users.userId,
+        // users.first_name,users.last_name,users.pp,users.gender,bidNft.bid,bidNft.created_at from users 
+        // inner join bidNft on  users.userId = bidNft.bidAccount 
+        // where bidNft.sellId is null and bidNft.nftId=? order by bidNft.bid desc,bidNft.created_at;',[$nftId]);
+
+
+        // select users.userId,
+        // users.first_name,users.last_name,users.pp,users.gender,bidNft.bid,bidNft.updated_at from users 
+        // inner join bidNft on  users.userId = bidNft.bidAccount and bidNft.sellerId="02dbdab56884c06473242376c558656a7eef6663"
+        // where bidNft.nftId="5e04820b834dc7921617b8e8b4da20f1f252b562"  order by bidNft.bid desc,bidNft.updated_at desc;
+
+  
+      
+        // select users.userId,
+        // users.first_name,users.last_name,users.pp,users.gender,bidNft.bid,bidNft.updated_at from users 
+        // inner join bidNft on  users.userId = bidNft.bidAccount and bidNft.sellerId="02dbdab56884c06473242376c558656a7eef6663"
+        // where bidNft.nftId="0bac1a2c584a7643ff1410f3d7da649c67ac5643"  order by bidNft.bid desc,bidNft.updated_at desc;
+ 
+        // $data['bidHistory']=DB::select('select users.userId,
+        // users.first_name,users.last_name,users.pp,users.gender,bidNft.bid,bidNft.updated_at from users 
+        // inner join bidNft on  users.userId = bidNft.bidAccount 
+        // where bidNft.nftId=? and bidNft.status!=2 ORDER BY updated_at desc;',[$nftId]);
+
+    
+
+        //sellNft tablosuna nftId ve  
+
+        
+
+        // $response=file_get_contents("https://data.messari.io/api/v1/assets?fields=id,slug,symbol,metrics/market_data/price_usd");
+        // $eth=json_decode($response)->data[1]->metrics->market_data->price_usd;
+        
+        // https://www.cryptocompare.com/cryptopian/api-keys
         $response=file_get_contents("https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC,ETH&tsyms=USD,EUR&api_key=6ed4c357ff81c34c0f9ced496018ed56153c7dcfa430a906f51fc405cde7ef42");
         $eth=json_decode($response)->ETH->USD;
         
@@ -582,6 +680,8 @@ class nftController extends Controller
     public function placeBid(Request $request)
     {
       
+      // $instantSale=nftModel::where('nftId',$request->nftId)->first();
+
 
  
       $time=Carbon::now();
@@ -603,8 +703,16 @@ class nftController extends Controller
                 $message->subject('Nuron NFT');
                 $message->to($array['email']);
          });
+        //mail gonder kabul;
       }
 
+
+      // $bid=DB::table('sellControl')->where('bidId',$nft->ownerId)->where('nftId',$nft->nftId)->orderBy('date','desc')->first();
+
+
+      // DB::table('sellControl')->where('winnerId',$nft->ownerId)->where('nftId',$nft->nftId);
+   
+      //daha once teklif verilmisse guncelle
       if($bidDublicate)
       {
         DB::table('bidNft')->where('bidAccount',$userId)->update([
@@ -632,6 +740,7 @@ class nftController extends Controller
         ]);
       }
       
+      //insta sale   para kontrolu yap
       if($nft->sellStatus==1 && $nft->instantSale==1 &&  $request->bid >= $nft->amount)
       {
 
@@ -649,12 +758,14 @@ class nftController extends Controller
         ]);
         
 
+        //reddedilen
         DB::table('bidNft')->where('nftId',$request->nftId)->where('sellId',null)->update([
           'status'=>3,
           'updated_at'=>$time,
           'sellId'=>$sellId
         ]);
 
+        //satılan
         DB::table('bidNft')->where('bidAccount',$userId)->where('nftId',$request->nftId)->where('sellId',$sellId)->update([
           'status'=>2,
           'updated_at'=>$time,
@@ -662,10 +773,12 @@ class nftController extends Controller
 
    
      
+        //royality 
     
         $royality=($nft->royality/100);
         $royalityUpdate=((double)$request->bid)*((double)$royality);
         $balanceUpdate=((double)$request->bid)-((double)$royalityUpdate);
+        // $serviceFee=($nft->amount*(2.5/100));
         $serviceFee=($request->bid*(2.5/100));
         $balanceUpdate=((double)$balanceUpdate)-((double)$serviceFee);
         
@@ -691,12 +804,15 @@ class nftController extends Controller
           'balance'=>$balanceUpdate
         ]);
 
+        //bidder
+        // $balance=((double)Auth::user()->balance)-((double)$request->serviceFee+(double)$request->bid);
         $balance=((double)Auth::user()->balance)-((double)$request->bid);
          userModel::where('userId',$userId)->update([
            'balance'=>$balance
          ]);
 
 
+              //satıs sonrası nft tablosu guncelle
         nftModel::where('nftId',$request->nftId)->update([
           'ownerId'=>$userId,
           'sellStatus'=>0,
@@ -715,6 +831,7 @@ class nftController extends Controller
                   $message->subject('Nuron NFT');
                   $message->to($array['email']);
            });
+          //mail gonder kabul;
         }
 
         if(Auth::user()->orderNotification==1)
@@ -727,6 +844,7 @@ class nftController extends Controller
                   $message->subject('Nuron NFT');
                   $message->to($array['email']);
            });
+          //mail gonder kabul;
         }
      
 
@@ -743,16 +861,28 @@ class nftController extends Controller
       
       if($data['user']!=null)
       {
+
+        //    $data['ownerNft']=nftModel::where('ownerId',$userId)->get();
+        //    $data['createNft']=nftModel::where('createrId',$userId)->get();
+        //    $data['onSaleNft']=nftModel::where('ownerId',$userId)->where('sellStatus',1)->get();
            
         $data['ownerNft']=DB::select("select * from createNft inner join users on users.userId=createNft.ownerId where createNft.sellStatus!=-1 and createNft.ownerId='".$userId."' order by createNft.updated_at desc");
+        // $data['ownerNftBid']=DB::select("select first_name,last_name,pp,userId from users where userId in (select bidAccount from bidNft where sellId is null  and nftId in (select nftId from createNft inner join users on users.userId=createNft.ownerId where createNft.ownerId='".$userId."'))");
+        // $data['ownerNftBid']=DB::select("select  users.first_name,users.last_name,users.pp,users.userId,bidNft.nftId,
+        // bidNft.bid
+        //  from users inner join bidNft on users.userId=bidNft.bidAccount
+        //  where  userId in (select bidAccount from bidNft where  nftId in 
+        //  (select nftId from createNft  where createNft.ownerId='".$userId."')) order by bidNft.bid desc, bidNft.created_at ");
+    
        
          $data['ownerNftBid']=DB::select("select users.first_name,users.last_name,users.gender,users.pp,users.userId,bidNft.nftId,
          bidNft.bid
           from users inner join bidNft on users.userId=bidNft.bidAccount
           where bidNft.sellId is null and userId in (select bidAccount from bidNft where  nftId in 
-          (select nftId from createNft  where createNft.ownerId='".$userId."')) order by bidNft.bid desc, bidNft.created_at ");
+          (select nftId from createNft  where createNft.ownerId='".$userId."'))  order by bidNft.bid desc, bidNft.created_at ");
           
     
+         
         $data['createNft']=DB::select("select * from createNft inner join users on users.userId=createNft.createrId where createNft.sellStatus!=-1 and createNft.createrId='".$userId."' order by createNft.updated_at desc");
     
         
@@ -760,7 +890,7 @@ class nftController extends Controller
         bidNft.bid
          from users inner join bidNft on users.userId=bidNft.bidAccount
          where bidNft.sellId is null and userId in (select bidAccount from bidNft where  nftId in 
-         (select nftId from createNft  where createNft.createrId='".$userId."')) order by bidNft.bid desc, bidNft.created_at ");
+         (select nftId from createNft  where createNft.createrId='".$userId."'))  order by bidNft.bid desc, bidNft.created_at ");
     
         $data['onSaleNft']=DB::select("select * from createNft inner join users on users.userId=createNft.ownerId where sellStatus=1 and createNft.createrId='".$userId."' order by createNft.updated_at desc");
     
@@ -775,11 +905,16 @@ class nftController extends Controller
             }
             
             $arrayNft=substr($arrayNft, 0, -1);
+            // tekrar bak
             $data['likesNft']=DB::select('select * from createNft inner join users on users.userId=createNft.ownerId where createNft.sellStatus!=-1 and nftId IN ('.$arrayNft.')');
+         
+            $data['likesNftBid']=DB::select('select users.first_name,users.last_name,users.gender,users.pp,users.userId,bidNft.nftId,
+            bidNft.bid from users inner join bidNft on users.userId=bidNft.bidAccount and bidNft.sellId is null and bidNft.nftId IN ('.$arrayNft.') order by bidNft.bid desc ');
            }
             else
             {
              $data['likesNft']=[];
+            $data['likesNftBid']=[];
             }
           }
           else
@@ -897,7 +1032,7 @@ class nftController extends Controller
       {
         $exploreBid[-1]=" ";
         $data['exploreBid']=DB::select('select users.first_name,users.last_name,users.gender,users.pp,users.userId,bidNft.nftId,
-        bidNft.bid from users inner join bidNft on users.userId=bidNft.bidAccount and bidNft.sellId is null and bidNft.nftId IN ('.$exploreBid.')');
+        bidNft.bid from users inner join bidNft on users.userId=bidNft.bidAccount and bidNft.sellId is null and bidNft.nftId IN ('.$exploreBid.')  order by bidNft.bid desc');
       }
       else
       $data['exploreBid']=[];
@@ -923,7 +1058,7 @@ class nftController extends Controller
       {
         $exploreBid[-1]=" ";
         $data['exploreBid']=DB::select('select users.first_name,users.last_name,users.gender,users.pp,users.userId,bidNft.nftId,
-        bidNft.bid from users inner join bidNft on users.userId=bidNft.bidAccount and bidNft.sellId is null and bidNft.nftId IN ('.$exploreBid.')');
+        bidNft.bid from users inner join bidNft on users.userId=bidNft.bidAccount and bidNft.sellId is null and bidNft.nftId IN ('.$exploreBid.')  order by bidNft.bid desc');
       }
       else
       $data['exploreBid']=[];
@@ -949,7 +1084,7 @@ class nftController extends Controller
       {
         $exploreBid[-1]=" ";
         $data['exploreBid']=DB::select('select users.first_name,users.last_name,users.gender,users.pp,users.userId,bidNft.nftId,
-        bidNft.bid from users inner join bidNft on users.userId=bidNft.bidAccount and bidNft.sellId is null and bidNft.nftId IN ('.$exploreBid.')');
+        bidNft.bid from users inner join bidNft on users.userId=bidNft.bidAccount and bidNft.sellId is null and bidNft.nftId IN ('.$exploreBid.')  order by bidNft.bid desc');
       }
       else
       $data['exploreBid']=[];
@@ -973,7 +1108,7 @@ class nftController extends Controller
       {
         $exploreBid[-1]=" ";
         $data['exploreBid']=DB::select('select users.first_name,users.last_name,users.gender,users.pp,users.userId,bidNft.nftId,
-        bidNft.bid from users inner join bidNft on users.userId=bidNft.bidAccount and bidNft.sellId is null and bidNft.nftId IN ('.$exploreBid.')');
+        bidNft.bid from users inner join bidNft on users.userId=bidNft.bidAccount and bidNft.sellId is null and bidNft.nftId IN ('.$exploreBid.')  order by bidNft.bid desc');
       }
       else
       $data['exploreBid']=[];
@@ -1000,7 +1135,7 @@ class nftController extends Controller
    $query='select *,JSON_LENGTH(likes) as likeCount from createNft where amount between '.$min.' and '.$max;
 
    $bidQuery='select users.first_name,users.last_name,users.gender,users.pp,users.userId,bidNft.nftId,
-   bidNft.bid from users inner join bidNft on users.userId=bidNft.bidAccount and bidNft.sellId';
+   bidNft.bid from users inner join bidNft on users.userId=bidNft.bidAccount and bidNft.sellId  order by bidNft.bid desc';
  
 
 
@@ -1047,8 +1182,16 @@ class nftController extends Controller
     $data['button']=1;
 
 
+
+    // $data['exploreBid']=DB::select("select users.first_name,users.last_name,users.gender,users.pp,users.userId,bidNft.nftId,
+    // bidNft.bid from users inner join bidNft on users.userId=bidNft.bidAccount and bidNft.sellId is null");
+    // return redirect()->to('explore')->withInput()->with($data);
     return view('content/explore',$data);
  
+    //  SELECT  *,JSON_LENGTH(likes) as likeCount FROM createNft  order by likeCount desc;
+
+    //  SELECT  *,JSON_LENGTH(likes) as likeCount FROM createNft  order by likeCount asc;
+     
 
   }
 
@@ -1088,6 +1231,7 @@ class nftController extends Controller
               $message->subject('Nuron NFT');
               $message->to($array['email']);
        });
+       //mail gonder reddedildi;
      }
    
 
@@ -1123,20 +1267,25 @@ class nftController extends Controller
         ]);
         
 
+        //reddedilen
         DB::table('bidNft')->where('nftId',$request->nftId)->where('sellId',null)->update([
           'status'=>3,
           'updated_at'=>$time,
           'sellId'=>$sellId
         ]);
+
+        //satılan
         DB::table('bidNft')->where('bidAccount',$user->userId)->where('nftId',$request->nftId)->where('sellId',$sellId)->update([
           'status'=>2,
           'updated_at'=>$time,
         ]);
 
 
+        //royality 
         $royality=($nft->royality/100);
         $royalityUpdate=((double)$bid->bid)*((double)$royality);
         $balanceUpdate=((double)$bid->bid)-((double)$royalityUpdate);
+        // $serviceFee=($nft->amount*(2.5/100));
         $serviceFee=($bid->bid*(2.5/100));
         $balanceUpdate=((double)$balanceUpdate)-((double)$serviceFee);
 
@@ -1169,6 +1318,7 @@ class nftController extends Controller
          ]);
 
 
+        //satıs sonrası nft tablosu guncelle
         nftModel::where('nftId',$request->nftId)->update([
           'ownerId'=>$user->userId,
           'sellStatus'=>0,
@@ -1180,6 +1330,7 @@ class nftController extends Controller
 
         if($user->orderNotification==1)
         {
+          //mail gonder kabul;
           $array['email'] = $user->email;
           $array['nftId'] = $request->nftId;
           $array['text']="Offer accepted.";
@@ -1208,6 +1359,7 @@ class nftController extends Controller
 
       if($user->orderNotification==1)
       {
+        //mail gonder red para yetersiz;
 
         $array['email'] = $user->email;
         $array['nftId'] = $request->nftId;
