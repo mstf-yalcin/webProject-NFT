@@ -776,7 +776,7 @@
                                 <div class="profile-share">
                                     {{-- No items to display --}}
                                     @php $counter=1; $bidCounter=1;  @endphp
-                                    @foreach($createNftBid as $i=>$bid)
+                                    @foreach($likesNftBid as $i=>$bid)
                                 @if($bid->nftId==$nft->nftId)
                                      @php  $bidCounter++; @endphp
                                    @if($counter<=3)
@@ -829,7 +829,7 @@
                                 </div>
                             </div>
                            <a href="{{url('nft',$nft->nftId)}}"><span class="product-name">{{$nft->name}}</span></a>
-                    @foreach ($ownerNftBid as $i=>$a)
+                    @foreach ($likesNftBid as $i=>$a)
                         @if($a->nftId==$nft->nftId)
                             <span class="latest-bid">Highest bid {{$a->bid}} ETH</span>
                               @break
@@ -1208,5 +1208,117 @@
     }
 </script>
 
+
+
+
+
+
+{{-- <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<link href="{{asset('assets/css/toastr.css')}}" rel="stylesheet">
+<script src="{{asset('assets/js/toastr.min.js')}}"></script>
+
+<script>
+   function likeNft(nftId)
+   {
+ var heartIcon=document.getElementById(`heartIcon${nftId}`);
+ var likeButton=document.getElementById(`likeButton${nftId}`);
+ var likeArea=document.getElementById(`likeArea${nftId}`);
+ var likeCount=document.getElementById(`likeCount${nftId}`);
+ var count=parseInt(likeCount.innerText);
+
+    $.ajaxSetup({
+headers: {
+    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+     }
+ });
+
  
+if(likeButton.value==1)
+ {
+ likeArea.classList.remove('heartButton');
+ heartIcon.style.color="currentColor";
+ heartIcon.style.fill="none";
+ likeCount.style.color="";
+ likeCount.innerText=count-1;
+ likeButton.value=0;
+ console.log("unlike");
+
+ $.ajax({
+        method: "post",
+        type: "post",
+        url: '{{route('likeNft')}}',
+        data: {'nftId':nftId,'stat':0},
+        success: function (response) {
+            console.log(response);
+        },
+        error:function (error)
+        {
+            console.log(error);
+            console.log(JSON.parse(error));
+        }
+    });
+
+
+ }
+ else if(likeButton.value==0)
+ {
+
+ likeArea.classList.add('heartButton');
+ heartIcon.style.color="white";
+ heartIcon.style.fill="white";
+ likeCount.style.color="white";
+ likeCount.innerText=count+1;
+ likeButton.value=1;
+ console.log("like");
+
+ $.ajax({
+        method: "post",
+        type: "post",
+        url: '{{route('likeNft')}}',
+        data: {'nftId':nftId,stat:1},
+        success: function (response) {
+            console.log(response);
+        },
+        error:function (error)
+        {
+            console.log(error);
+            console.log(JSON.parse(error));
+        }
+    });
+
+ }
+ else
+ {
+      location.href = "/login";
+     console.log("login");
+ }
+
+   }
+
+
+</script>
+
+<script>
+function copy(nftId)
+{
+    var copyText = document.getElementById(`${nftId}`);
+    navigator.clipboard.writeText(copyText.href);
+    toastr.info("Copy",'Copy',({ "closeButton": false,
+"debug": false,
+"newestOnTop": true,
+"progressBar": true,
+"positionClass": "toast-top-right",
+"preventDuplicates": true,
+"onclick": null,
+"showDuration": "150",
+"hideDuration": "500",
+"timeOut": "1500",
+"extendedTimeOut": "500",
+"showEasing": "swing",
+"hideEasing": "linear",
+"showMethod": "fadeIn",
+"hideMethod": "fadeOut"
+    }))
+}
+</script> --}}
     @include('include/footer')
