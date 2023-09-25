@@ -8,7 +8,7 @@
 </p>
 
 Web Site link:
-https://nuron-nft.tk/
+https://nuron-nft.000webhostapp.com/
 
 Html, css and javascript files of the site were taken from http://preview.themeforest.net/item/nuron-nft-marketplace-html-template/full_screen_preview/35154756 and edited. Next, using laravel backend operation has been done.
 
